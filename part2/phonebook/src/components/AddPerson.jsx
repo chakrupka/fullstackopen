@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import isEqual from "lodash.isequal"
+import phoneService from "../services/phonebook"
 
 const AddPerson = ({ persons, setPersons }) => {
   const [newName, setNewName] = useState("")
@@ -8,13 +9,32 @@ const AddPerson = ({ persons, setPersons }) => {
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = { name: newName, number: newNumber }
-    if (persons.some((person) => isEqual(person, newPerson)))
-      alert(`${newName} is already in the phonebook with number ${newNumber}`)
-    else {
-      setPersons(persons.concat(newPerson))
-      setNewName("")
-      setNewNumber("")
+    if (persons.some((person) => isEqual(person.name, newPerson.name))) {
+      const oldPerson = persons.find((person) =>
+        isEqual(person.name, newPerson.name)
+      )
+      const changedPerson = { ...oldPerson, number: newNumber }
+
+      if (
+        window.confirm(
+          `${newName} is already in the phonebook, replace current number?`
+        )
+      ) {
+        phoneService.update(changedPerson).then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== oldPerson.id ? person : returnedPerson
+            )
+          )
+        })
+      }
+    } else {
+      phoneService.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+      })
     }
+    setNewName("")
+    setNewNumber("")
   }
 
   const handleNameChange = (event) => setNewName(event.target.value)

@@ -1,14 +1,16 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Search from "./components/Search"
 import AddPerson from "./components/AddPerson"
 import ListPersons from "./components/ListPersons"
+import phoneService from "./services/phonebook"
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "8022421923" },
-    { name: "Bill Russell", number: "6171234567" },
-    { name: "Jayson Tatum", number: "2480000000" },
-  ])
+  const [persons, setPersons] = useState([])
+  useEffect(() => {
+    phoneService.getAll().then((personList) => {
+      setPersons(personList)
+    })
+  })
 
   return (
     <div>
@@ -16,7 +18,7 @@ const App = () => {
       <Search persons={persons} />
       <AddPerson persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      <ListPersons persons={persons} />
+      <ListPersons persons={persons} setPersons={setPersons} />
     </div>
   )
 }
