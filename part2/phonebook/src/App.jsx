@@ -10,7 +10,7 @@ const App = () => {
     phoneService.getAll().then((personList) => {
       setPersons(personList)
     })
-  })
+  }, [])
 
   return (
     <div>
