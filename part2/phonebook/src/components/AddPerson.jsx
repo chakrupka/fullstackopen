@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import isEqual from "lodash.isequal"
 import phoneService from "../services/phonebook"
 
-const AddPerson = ({ persons, setPersons }) => {
+const AddPerson = ({ persons, setPersons, setMessage }) => {
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
 
@@ -26,11 +26,21 @@ const AddPerson = ({ persons, setPersons }) => {
               person.id !== oldPerson.id ? person : returnedPerson
             )
           )
+          setMessage({
+            message: `Updated ${returnedPerson.name}'s number to ${returnedPerson.number}`,
+            type: "success",
+          })
+          setTimeout(() => setMessage({ message: null, type: "success" }), 5000)
         })
       }
     } else {
       phoneService.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson))
+        setMessage({
+          message: `Added ${returnedPerson.name} to phonebook`,
+          type: "success",
+        })
+        setTimeout(() => setMessage({ message: null, type: "success" }), 5000)
       })
     }
     setNewName("")

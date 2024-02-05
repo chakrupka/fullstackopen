@@ -1,9 +1,27 @@
 import phoneService from "../services/phonebook"
 import Person from "../components/Person"
+import { isEqual } from "lodash.isequal"
 
-const ListPersons = ({ persons, setPersons }) => {
-  const removePerson = (person) => {
-    if (window.confirm(`Remove ${person.name}?`)) phoneService.remove(person.id)
+const ListPersons = ({ persons, setMessage, setPersons }) => {
+  const removePerson = (removedPerson) => {
+    if (window.confirm(`Remove ${removedPerson.name}?`)) {
+      phoneService
+        .remove(removedPerson.id)
+        .then((response) =>
+          setMessage({
+            message: `Removed ${removedPerson.name}`,
+            type: "success",
+          })
+        )
+        .catch((error) =>
+          setMessage({
+            message: `${removedPerson.name} has already been removed from server`,
+            type: "error",
+          })
+        )
+    }
+    setTimeout(() => setMessage({ message: null, type: "success" }), 5000)
+    setPersons(persons.filter((person) => person.id !== removedPerson.id))
   }
 
   return (
