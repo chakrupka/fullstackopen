@@ -14,6 +14,7 @@ const AddPerson = ({ persons, setPersons, setMessage }) => {
         isEqual(person.name, newPerson.name)
       )
       const changedPerson = { ...oldPerson, number: newNumber }
+      console.log(changedPerson)
 
       if (
         window.confirm(
