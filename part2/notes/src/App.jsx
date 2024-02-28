@@ -7,7 +7,7 @@ const Footer = () => {
   const footerStyle = {
     color: "green",
     fontStyle: "italic",
-    fontStyle: 16,
+    fontSize: 16,
   }
   return (
     <div style={footerStyle}>
