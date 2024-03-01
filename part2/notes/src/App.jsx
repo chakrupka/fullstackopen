@@ -23,7 +23,7 @@ const App = () => {
   const [notes, setNotes] = useState(null)
   const [newNote, setNewNote] = useState("")
   const [showAll, setShowAll] = useState(true)
-  const [message, setMessage] = useState(null)
+  const [notif, setNotif] = useState({ message: null, type: null })
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -37,25 +37,37 @@ const App = () => {
 
     noteService
       .update(id, changedNote)
-      .then((returnedNote) => {
-        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
-      })
+      // .then((returnedNote) => {
+      //   setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
+      // })
+      // .catch(() => {
+      //   setNotif({
+      //     message: `Note '${note.content}' was already removed from server`,
+      //     type: "error",
+      //   })
+      //   setTimeout(() => setMessage(null), 5000)
+      //   setNotes(notes.filter((n) => n.id !== id))
+      // })
       .catch((error) => {
-        setMessage(`Note '${note.content}' was already removed from server`)
-        setTimeout(() => setMessage(null), 5000)
-        setNotes(notes.filter((n) => n.id !== id))
+        setNotif({
+          message: `This feature is disabled`,
+          type: "error",
+        })
       })
   }
 
   const addNote = (event) => {
     event.preventDefault()
+    const isImportant = Math.random() < 0.5
+    console.log(isImportant)
     const noteObject = {
       content: newNote,
-      important: Math.random() < 0.5,
+      important: isImportant,
     }
 
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote))
+      setNotif({ message: `Added note to server`, type: "success" })
       setNewNote("")
     })
   }
@@ -73,7 +85,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={message} />
+      <Notification message={notif.message} type={notif.type} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? "important" : "all"}
